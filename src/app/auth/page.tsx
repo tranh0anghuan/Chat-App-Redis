@@ -1,9 +1,12 @@
 import React from 'react'
 
-const page = () => {
+const AuthPage = () => {
   return (
-    <div>page</div>
+    <div className="flex h-screen w-full">
+        <div className="flex-1 flex overflow-hidden dark:bg-[#651c2b55] bg-[#651c2b] relative justify-center items-center "></div>
+        <div className="flex-1"></div>
+    </div>
   )
 }
 
-export default page
+export default AuthPage
