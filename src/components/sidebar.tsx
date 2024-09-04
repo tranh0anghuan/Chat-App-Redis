@@ -1,4 +1,4 @@
-import { USERS } from "@/db/dummy";
+import { User, USERS } from "@/db/dummy";
 import React from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -13,15 +13,20 @@ import { cn } from "@/lib/utils";
 import { LogOut } from "lucide-react";
 import useSound from "use-sound";
 import { usePreferences } from "@/store/use-preferences";
+import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
+import { useSelectedUser } from "@/store/use-selected-user";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
 interface SidebarProps {
   isCollapsed: boolean;
+  users: User[];
 }
 
-const Sidebar = ({ isCollapsed }: SidebarProps) => {
-  const selectedUser = USERS[0];
+const Sidebar = ({ isCollapsed,users }: SidebarProps) => {
   const [playMouseClick] = useSound("/sounds/mouse-click.mp3");
   const { soundEnabled } = usePreferences();
+  const { selectedUser, setSelectedUser } = useSelectedUser();
+  const { user } = useKindeBrowserClient();
 
   return (
     <div className="relative flex flex-col h-full gap-4 p-2 data-[collapsed=true]:p-2 max-h-full overflow-auto bg-background">
@@ -33,7 +38,7 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
         </div>
       )}
       <ScrollArea className="gap-2 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
-        {USERS.map((user, idx) =>
+        {users?.map((user, idx) =>
           isCollapsed ? (
             <TooltipProvider key={idx}>
               <Tooltip delayDuration={0}>
@@ -56,7 +61,7 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                 </TooltipTrigger>
                 <TooltipContent
                   side="right"
-                  className="flex items-center gap-4"
+                  className="flex items-center gap-4 truncate"
                 >
                   {user.name}
                 </TooltipContent>
@@ -73,8 +78,8 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                   "dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white shrink"
               )}
               onClick={() => {
-              	soundEnabled && playMouseClick();
-              	// setSelectedUser(user);
+                soundEnabled && playMouseClick();
+                setSelectedUser(user);
               }}
             >
               <Avatar className="flex justify-center items-center">
@@ -86,7 +91,7 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                 <AvatarFallback>{user.name[0]}</AvatarFallback>
               </Avatar>
               <div className="flex flex-col max-w-28">
-                <span>{user.name}</span>
+                <span className="truncate">{user.name}</span>
               </div>
             </Button>
           )
@@ -94,22 +99,24 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
       </ScrollArea>
 
       <div className="mt-auto">
-        <div className="flex justify-between items-center gap-2 md:px-6 py-2">
+        <div className="flex justify-between items-center gap-2 md:px-6 py-2 ">
           {!isCollapsed && (
-            <div className="hidden md:flex gap-2 items-center ">
+            <div className="hidden md:flex gap-2 items-center w-full ">
               <Avatar className="flex justify-center items-center">
                 <AvatarImage
-                  src={"/user-placeholder.png"}
+                  src={user?.picture || "/user-placeholder.png"}
                   alt="avatar"
                   referrerPolicy="no-referrer"
                   className="w-8 h-8 border-2 border-white rounded-full"
                 />
               </Avatar>
-              <p className="font-bold">huan</p>
+              <p className="font-bold truncate">{user?.given_name} {user?.family_name}</p>
             </div>
           )}
           <div className="flex">
-            <LogOut size={22} cursor={"pointer"} />
+            <LogoutLink>
+              <LogOut size={22} cursor={"pointer"} />
+            </LogoutLink>
           </div>
         </div>
       </div>
