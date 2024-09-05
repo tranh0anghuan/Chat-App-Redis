@@ -22,8 +22,8 @@ const MessageContainer = () => {
       <ChatTopbar />
       <div className="w-full overflow-y-auto overflow-x-hidden h-full flex flex-col">
         <MessageList />
+        <ChatBottombar />
       </div>
-      <ChatBottombar />
     </div>
   );
 };

@@ -32,10 +32,9 @@ async function getUsers(): Promise<User[]> {
   const users: User[] = [];
   for (const user of results) {
     // exclude the current user from the list of users in the sidebar
-    // if (user.id !== currentUser?.id) {
-    //   users.push(user);
-    // }
-    users.push(user);
+    if (user.id !== currentUser?.id) {
+      users.push(user);
+    }
   }
   return users;
 }
